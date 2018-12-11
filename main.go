@@ -2,19 +2,18 @@ package main
 
 import (
 	"archive/zip"
-	//	"crypto/rand"
+
 	"bytes"
 	"crypto/rsa"
 	"path/filepath"
 
-	//"crypto/sha256"
-	//"crypto/tls"
+
 	"encoding/base64"
 
 	"crypto/x509"
 	"encoding/pem"
 
-	//"crypto"
+	
 	"errors"
 	"flag"
 
@@ -23,7 +22,7 @@ import (
 	"encoding/xml"
 	"fmt"
 
-	//"hash"
+
 	"io"
 	"io/ioutil"
 	"log"
@@ -31,7 +30,7 @@ import (
 	"pkcs7"
 	"strings"
 
-	//"testing"
+
 	"time"
 )
 
@@ -84,7 +83,6 @@ func main() {
 		}
 
 		fmt.Println("Files were zipped")
-		//p := Path + "\\"
 		for i, file := range List {
 
 			err := List[i].cngName(Path)
@@ -152,7 +150,7 @@ func main() {
 }
 
 //метод нужен для удаления из полного имени файла ненужной части пути,
-//например у имени: "С:\Sasha\dirToZip\Laba.go" часть "С:\Sasha\" не нужна после создания архива
+
 func (f *sFile) cngName(path string) error {
 	var err error
 	f.Name, err = filepath.Rel(path, f.Name)
@@ -200,16 +198,11 @@ func Verify() (sign *pkcs7.PKCS7, err error) {
 		log.Printf("Sign is not verified")
 		return sign, err
 	}
-	//fmt.Println("Sign was made by " + sign.Certificates[0].Issuer.CommonName)
+
 	return sign, nil
 }
 
 func SignZip(cert string, key string, Output string, zipFile *bytes.Buffer) error {
-	/*zipFile, err := ioutil.ReadFile(Output)
-	if err != nil {
-		log.Printf("error")
-		return err
-	}*/
 
 	signedData, err := pkcs7.NewSignedData(zipFile.Bytes())
 	if err != nil {
@@ -361,31 +354,9 @@ func Extract() error {
 		fmt.Println("Hash of sign: " + strings.ToUpper(fmt.Sprintf("%x", sha1.Sum(signer.Raw))))
 	}
 	data = sign.Content
-	//fmt.Println("Hash of sign: " + strings.ToUpper(fmt.Sprintf("%x", sha1.Sum(signer.Raw))))
 
-	//mlen := binary.LittleEndian.Uint32(data[:4]) //получаю длину метаданных
-
-	//bmeta := data[4 : mlen+4] //получаю байты метаданных
 	buf, mlen, err := ReadMeta(data)
 	dzip := data[mlen+4:] // считываю остальную часть архива с файлами
-
-	/*m, err := zip.NewReader(bytes.NewReader(bmeta), int64(len(bmeta)))
-	if err != nil {
-		log.Printf("Can not open meta")
-		return err
-	}
-	f := m.File[0] //т.к. в архиве меты всего 1 файл, получаю его
-	buf := new(bytes.Buffer)
-	st, err := f.Open()
-	if err != nil {
-		log.Printf(err.Error())
-		return err
-	}
-	_, err = io.Copy(buf, st)
-	if err != nil {
-		log.Printf(err.Error())
-		return err
-	}*/
 
 	xmlMeta := new(meta)
 
@@ -395,13 +366,13 @@ func Extract() error {
 		return err
 	}
 
-	//r, err := zip.OpenReader("uzip.zip")
+	
 	r, err := zip.NewReader(bytes.NewReader(dzip), int64(len(dzip)))
 	if err != nil {
 		log.Printf("Can not open zip")
 		return err
 	}
-	//defer r.Close()
+
 
 	var fm os.FileMode
 	err = os.RemoveAll("extract")
